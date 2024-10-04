@@ -6,6 +6,13 @@ using System.Threading.Channels;
 
 namespace UdemyRabbitMQ.publisher
 {
+    public enum LogNames{
+        Critical=1,
+        Info=2, 
+        Warning=3,
+        Error=4
+    }
+
     internal class Program
     {
         static void Main(string[] args)
@@ -17,7 +24,13 @@ namespace UdemyRabbitMQ.publisher
             var channel=connection.CreateModel();
             //channel.QueueDeclare("hello-queue",true,false,false);//bir kuyruğu (queue) tanımlamak ve oluşturmak için kullanılan bir yöntemdir.
 
-            channel.ExchangeDeclare("logs-fanout", durable: true,type:ExchangeType.Fanout);//channel.ExchangeDeclare("logs") RabbitMQ'da bir exchange (değişim) oluşturmak için kullanılan bir komuttur. RabbitMQ, mesajları yönlendiren bir mesaj kuyruğu sistemidir ve exchange'lar bu mesajların hangi kuyruklara yönlendirileceğini belirler.
+            channel.ExchangeDeclare("logs-direct", durable: true,type:ExchangeType.Direct);//channel.ExchangeDeclare("logs") RabbitMQ'da bir exchange (değişim) oluşturmak için kullanılan bir komuttur. RabbitMQ, mesajları yönlendiren bir mesaj kuyruğu sistemidir ve exchange'lar bu mesajların hangi kuyruklara yönlendirileceğini belirler.
+
+            Enum.GetNames(typeof(LogNames)).ToList().ForEach(name => {
+                var queueName = $"direct-queue-{name}";
+            });
+
+
             Enumerable.Range(1, 50).ToList().ForEach(x =>
             {
 
